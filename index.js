@@ -1,0 +1,93 @@
+const Discord = require("discord.js")
+const config = require("./config.json")
+
+const keepAlive = require("./server");
+
+
+
+keepAlive();
+
+
+
+//a cute client
+const client = new Discord.Client({
+    disableMentions: "everyone",
+    fetchAllMembers: true,
+    partials: [
+        "USER",
+        "GUILD_MEMBER",
+        "CHANNEL",
+        "REACTION",
+        "MESSAGE"
+    ],
+    ws: {
+        intents: [
+            "GUILD_PRESENCES",
+            "GUILDS", 
+            "GUILD_MEMBERS", 
+            "GUILD_MESSAGE_REACTIONS",
+            "GUILD_EMOJIS", 
+            "GUILD_VOICE_STATES", 
+            "GUILD_MESSAGES"
+        ]
+    },
+    presence: {
+        activity: {
+            name: `for ${config.prefix}help`,
+            type: "WATCHING"
+        }
+    }
+})
+
+client.options.restTimeOffset = 250
+client.counters = {
+    commands: 0,
+    events: 0 
+}
+
+client.closed = false 
+client.cooldowns = new Discord.Collection()
+
+client.bets = new Discord.Collection()
+client.rls = new Discord.Collection()
+client.gangs_net = new Discord.Collection()
+
+client.os = require("node-os-utils")
+
+client.translate = require("@34r7h/google-translate-api")
+
+client.random = require("random-between")
+client.presences = new Discord.Collection()
+client.snipes = new Discord.Collection()
+client.esnipes = new Discord.Collection()
+client.giveaways = new Discord.Collection()
+client.commands = new Discord.Collection()
+client.owners = ["777788768739393546"]
+client.prefix = config.prefix 
+client.blacklist = new Discord.Collection()
+
+client.axios = require("axios")
+client.db = require("quick.db")
+client.discord = Discord 
+client.ms = require("ms")
+client.parse = require("parse-ms")
+client.fs = require("fs")
+client.deep = require("deepmerge")
+
+client.on("messageDelete", (m) => require("./src/events/messageDelete")(client, m))
+
+client.on("messageUpdate", (oldm, newm) => require("./src/events/messageUpdate")(client, oldm, newm))
+
+client.on("message", (m) => require("./src/events/message")(client, m))
+
+client.on("guildMemberAdd", (member) => require("./src/events/guildMemberAdd")(client, member))
+
+client.on("ready", () => require("./src/events/ready")(client))
+
+client.login(process.env.TOKEN)
+
+BigInt.prototype.shorten = function(show = true) {
+    if (!show) return this.toLocaleString() 
+    if (this.toString().length > 90 && this.toString().length < 1200) return this.toLocaleString().split(",").slice(0, 30).join(",") + `... (${this.toLocaleString().split(",").slice(30).join("").length + 1} integers more)`
+    return 1200 <= this.toString().length ? "**∞**" : this.toLocaleString() 
+}
